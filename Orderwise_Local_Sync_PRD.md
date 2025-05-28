@@ -1,4 +1,4 @@
-
+ee
 # Product Requirements Document (PRD)
 Project Name: Orderwise Local Sync Validator
 Goal: Validate a local architecture stack (Node.js Windows Service + Electron + SQLite) that securely interacts with the Orderwise REST API and external services within a corporate network.

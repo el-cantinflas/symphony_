@@ -9,8 +9,14 @@ Tokens used: 41.4k
 ### Sub-task 1.2
 Openrouter: openai/gpt-4o-mini
 0.03 USD
-Tokens used: 38.6k
+Tokens used: 38.6keee
 Comment: Was problematic, not sure it was successful. Created file DBmanager.j
+
+### Sub-task 1.3
+Openrouter: anthropic/claude-3.7-sonnet
+0.53 USD
+Tokens used: 49.3k
+Comment: Wrote a lot of filese
 
 # Advertised Prices
 ## Openrouter
