@@ -3,7 +3,7 @@ const sqlite3 = require('better-sqlite3');
 const path = require('path');
 
 // Define the path to the SQLite database file
-const dbPath = path.join(__dirname, 'database.sqlite');
+const dbPath = path.join(__dirname, '..', 'Database', 'database.sqlite');
 
 // Create a new database connection
 const db = sqlite3(dbPath, { verbose: console.log });

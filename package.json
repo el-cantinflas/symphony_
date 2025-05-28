@@ -1,9 +1,12 @@
 {
   "name": "symphony_2",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A local architecture stack (Node.js Windows Service + Electron + SQLite) that securely interacts with the Orderwise REST API and external services within a corporate network.",
+  "main": "src/index.js",
   "scripts": {
+    "start": "electron .",
+    "service": "node src/service.js",
+    "rebuild": "electron-rebuild",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -23,7 +23,7 @@ Use npm to install dependencies: 'npm install electron sqlite3' or 'npm install 
 ### Details:
 Create a DBManager.js or similar file to manage database connections and schema creation. Use SQL statements to define tables and ensure they are created on first run.
 
-## 3. Set Up Project Structure and Documentation [pending]
+## 3. Set Up Project Structure and Documentation [done]
 ### Dependencies: 1.1
 ### Description: Organize the project directory structure and create initial documentation files.
 ### Details:

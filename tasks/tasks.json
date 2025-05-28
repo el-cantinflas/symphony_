@@ -36,7 +36,7 @@
             1
           ],
           "details": "Establish folders such as 'src', 'public', and 'Database'. Add README.md with setup instructions, and include comments in code for clarity.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 4,
