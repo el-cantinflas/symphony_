@@ -1,0 +1,26 @@
+{
+  "name": "symphony_2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/el-cantinflas/symphony_.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/el-cantinflas/symphony_/issues"
+  },
+  "homepage": "https://github.com/el-cantinflas/symphony_#readme",
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.1",
+    "better-sqlite3": "^11.10.0",
+    "electron": "^36.3.1"
+  }
+}
