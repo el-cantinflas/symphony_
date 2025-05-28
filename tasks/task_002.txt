@@ -1,0 +1,11 @@
+# Task ID: 2
+# Title: Implement Node.js Windows Service with SQLite Integration
+# Status: pending
+# Dependencies: 1
+# Priority: high
+# Description: Develop a minimal Node.js background service that logs heartbeat events and initializes service state in SQLite. Ensure service can be started, stopped, and monitored.
+# Details:
+Use node-windows (latest, e.g., 1.0.0) or pm2-windows-service (latest, e.g., 2.0.0) to run Node.js as a Windows Service. Implement service logic to log heartbeat (every minute) and initial state to SQLite logs table. Use sqlite3 npm package for DB operations. Ensure service lifecycle (start, stop, restart) is managed via Windows Services panel. Document service behavior and logging format.
+
+# Test Strategy:
+Test service installation, startup, and shutdown. Verify heartbeat and state logs in SQLite. Check service management via Windows Services panel.

@@ -1,0 +1,11 @@
+# Task ID: 5
+# Title: Package and Deploy with MSI Installer
+# Status: pending
+# Dependencies: 4
+# Priority: medium
+# Description: Create MSI installer for easy deployment and uninstallation. Configure firewall rules and test deployment on clean Windows environment.
+# Details:
+Use WiX Toolset (latest, e.g., 4.x) or Advanced Installer to bundle Node.js service, Electron app, and SQLite DB. Configure installer to set up firewall rules for required ports. Ensure installer can run without admin permissions if possible. Document installation and uninstallation flow. Test on clean Windows environment. Ensure uninstall removes all registry and filesystem artifacts.
+
+# Test Strategy:
+Test full install/uninstall cycle without admin permissions. Verify firewall rule presence. Check for leftover files or registry entries after uninstall.

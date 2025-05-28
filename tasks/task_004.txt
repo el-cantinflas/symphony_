@@ -1,0 +1,11 @@
+# Task ID: 4
+# Title: Build Electron UI for Configuration and Log Monitoring
+# Status: pending
+# Dependencies: 3
+# Priority: medium
+# Description: Develop Electron desktop UI for configuring endpoints and monitoring logs. Save user inputs to SQLite and display recent logs.
+# Details:
+Use Electron (latest, e.g., 28.x) with React (latest, e.g., 18.x) or vanilla JS for UI. Build configuration screen with fields: Orderwise API Base URL, External Webhook URL, Bearer Token. Add buttons: Test Orderwise, Send Test Payload, Sync Now. Implement log viewer to display recent sync attempts with timestamps and statuses. Save user inputs to SQLite config table. Use sqlite3 npm package for DB access from UI. Ensure responsive layout for 800x600 resolution with system font and clear spacing.
+
+# Test Strategy:
+Test UI input and save to SQLite. Validate log display and button actions. Check UI responsiveness and layout.

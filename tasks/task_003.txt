@@ -1,0 +1,11 @@
+# Task ID: 3
+# Title: Develop API Communication and Config Management
+# Status: pending
+# Dependencies: 2
+# Priority: medium
+# Description: Add API request module to Node.js service with retry and timeout logic. Implement config reader and validator from SQLite. Prepare mock payloads and test endpoints.
+# Details:
+Use axios (latest, e.g., 1.x) for HTTP requests. Implement retry logic with exponential backoff (e.g., using axios-retry). Add config reader/validator to read from SQLite config table. Prepare mock payloads for Orderwise API and external webhook. Define two test endpoints. Log all request, response, and failure metadata to SQLite logs table.
+
+# Test Strategy:
+Test successful and failed API calls. Validate config reading and validation. Check log entries for request metadata and error handling.

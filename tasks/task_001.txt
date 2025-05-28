@@ -1,0 +1,43 @@
+# Task ID: 1
+# Title: Setup Project Repository and Core Infrastructure
+# Status: in-progress
+# Dependencies: None
+# Priority: high
+# Description: Initialize the project repository with Node.js, Electron, and SQLite dependencies. Define the SQLite schema for config and logs tables. Set up basic project structure and documentation.
+# Details:
+Use npm init to scaffold the project. Install Node.js (LTS, e.g., v20.x), Electron (latest stable, e.g., 28.x), and SQLite3 (latest, e.g., 5.x). Define SQLite schema with tables: config (key, value, updated_at), logs (id, event, data, timestamp). Use TypeScript for type safety if possible. Document schema and project structure in README. Use git for version control. Consider using pm2-windows-service or node-windows for future Windows service integration.
+
+# Test Strategy:
+Verify project structure, package.json, and SQLite schema. Test DB file creation and table presence. Validate documentation completeness.
+
+# Subtasks:
+## 1. Install and Configure Node.js, Electron, and SQLite [done]
+### Dependencies: None
+### Description: Set up the development environment by installing Node.js, Electron, and SQLite (using a package like sqlite3 or better-sqlite3). Ensure Electron and SQLite are compatible and rebuild native modules if necessary.
+### Details:
+Use npm to install dependencies: 'npm install electron sqlite3' or 'npm install electron better-sqlite3'. Run electron-rebuild if using native modules. Verify installations by running basic version checks.
+
+## 2. Define and Initialize SQLite Schema [done]
+### Dependencies: 1.1
+### Description: Design the database schema and implement initialization logic to create tables if they do not exist.
+### Details:
+Create a DBManager.js or similar file to manage database connections and schema creation. Use SQL statements to define tables and ensure they are created on first run.
+
+## 3. Set Up Project Structure and Documentation [pending]
+### Dependencies: 1.1
+### Description: Organize the project directory structure and create initial documentation files.
+### Details:
+Establish folders such as 'src', 'public', and 'Database'. Add README.md with setup instructions, and include comments in code for clarity.
+
+## 4. Initialize Version Control with Git [pending]
+### Dependencies: 1.3
+### Description: Set up git for version control, including .gitignore and initial commit.
+### Details:
+Run 'git init', create a .gitignore file (excluding node_modules, database files, etc.), and make the first commit with the initial project structure and documentation.
+
+## 5. Verify Project Structure and Database Initialization [pending]
+### Dependencies: 1.2, 1.3, 1.4
+### Description: Test the project setup by running the application, checking package.json, confirming SQLite DB file creation, table presence, and documentation completeness.
+### Details:
+Start the Electron app, ensure the database file is created, tables exist as defined, and documentation accurately reflects the setup process. Validate that all files are tracked by git as intended.
+

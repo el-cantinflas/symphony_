@@ -1,0 +1,118 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Setup Project Repository and Core Infrastructure",
+      "description": "Initialize the project repository with Node.js, Electron, and SQLite dependencies. Define the SQLite schema for config and logs tables. Set up basic project structure and documentation.",
+      "details": "Use npm init to scaffold the project. Install Node.js (LTS, e.g., v20.x), Electron (latest stable, e.g., 28.x), and SQLite3 (latest, e.g., 5.x). Define SQLite schema with tables: config (key, value, updated_at), logs (id, event, data, timestamp). Use TypeScript for type safety if possible. Document schema and project structure in README. Use git for version control. Consider using pm2-windows-service or node-windows for future Windows service integration.",
+      "testStrategy": "Verify project structure, package.json, and SQLite schema. Test DB file creation and table presence. Validate documentation completeness.",
+      "priority": "high",
+      "dependencies": [],
+      "status": "in-progress",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Install and Configure Node.js, Electron, and SQLite",
+          "description": "Set up the development environment by installing Node.js, Electron, and SQLite (using a package like sqlite3 or better-sqlite3). Ensure Electron and SQLite are compatible and rebuild native modules if necessary.",
+          "dependencies": [],
+          "details": "Use npm to install dependencies: 'npm install electron sqlite3' or 'npm install electron better-sqlite3'. Run electron-rebuild if using native modules. Verify installations by running basic version checks.",
+          "status": "done"
+        },
+        {
+          "id": 2,
+          "title": "Define and Initialize SQLite Schema",
+          "description": "Design the database schema and implement initialization logic to create tables if they do not exist.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create a DBManager.js or similar file to manage database connections and schema creation. Use SQL statements to define tables and ensure they are created on first run.",
+          "status": "done"
+        },
+        {
+          "id": 3,
+          "title": "Set Up Project Structure and Documentation",
+          "description": "Organize the project directory structure and create initial documentation files.",
+          "dependencies": [
+            1
+          ],
+          "details": "Establish folders such as 'src', 'public', and 'Database'. Add README.md with setup instructions, and include comments in code for clarity.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Initialize Version Control with Git",
+          "description": "Set up git for version control, including .gitignore and initial commit.",
+          "dependencies": [
+            3
+          ],
+          "details": "Run 'git init', create a .gitignore file (excluding node_modules, database files, etc.), and make the first commit with the initial project structure and documentation.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Verify Project Structure and Database Initialization",
+          "description": "Test the project setup by running the application, checking package.json, confirming SQLite DB file creation, table presence, and documentation completeness.",
+          "dependencies": [
+            2,
+            3,
+            4
+          ],
+          "details": "Start the Electron app, ensure the database file is created, tables exist as defined, and documentation accurately reflects the setup process. Validate that all files are tracked by git as intended.",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Implement Node.js Windows Service with SQLite Integration",
+      "description": "Develop a minimal Node.js background service that logs heartbeat events and initializes service state in SQLite. Ensure service can be started, stopped, and monitored.",
+      "details": "Use node-windows (latest, e.g., 1.0.0) or pm2-windows-service (latest, e.g., 2.0.0) to run Node.js as a Windows Service. Implement service logic to log heartbeat (every minute) and initial state to SQLite logs table. Use sqlite3 npm package for DB operations. Ensure service lifecycle (start, stop, restart) is managed via Windows Services panel. Document service behavior and logging format.",
+      "testStrategy": "Test service installation, startup, and shutdown. Verify heartbeat and state logs in SQLite. Check service management via Windows Services panel.",
+      "priority": "high",
+      "dependencies": [
+        1
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 3,
+      "title": "Develop API Communication and Config Management",
+      "description": "Add API request module to Node.js service with retry and timeout logic. Implement config reader and validator from SQLite. Prepare mock payloads and test endpoints.",
+      "details": "Use axios (latest, e.g., 1.x) for HTTP requests. Implement retry logic with exponential backoff (e.g., using axios-retry). Add config reader/validator to read from SQLite config table. Prepare mock payloads for Orderwise API and external webhook. Define two test endpoints. Log all request, response, and failure metadata to SQLite logs table.",
+      "testStrategy": "Test successful and failed API calls. Validate config reading and validation. Check log entries for request metadata and error handling.",
+      "priority": "medium",
+      "dependencies": [
+        2
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 4,
+      "title": "Build Electron UI for Configuration and Log Monitoring",
+      "description": "Develop Electron desktop UI for configuring endpoints and monitoring logs. Save user inputs to SQLite and display recent logs.",
+      "details": "Use Electron (latest, e.g., 28.x) with React (latest, e.g., 18.x) or vanilla JS for UI. Build configuration screen with fields: Orderwise API Base URL, External Webhook URL, Bearer Token. Add buttons: Test Orderwise, Send Test Payload, Sync Now. Implement log viewer to display recent sync attempts with timestamps and statuses. Save user inputs to SQLite config table. Use sqlite3 npm package for DB access from UI. Ensure responsive layout for 800x600 resolution with system font and clear spacing.",
+      "testStrategy": "Test UI input and save to SQLite. Validate log display and button actions. Check UI responsiveness and layout.",
+      "priority": "medium",
+      "dependencies": [
+        3
+      ],
+      "status": "pending",
+      "subtasks": []
+    },
+    {
+      "id": 5,
+      "title": "Package and Deploy with MSI Installer",
+      "description": "Create MSI installer for easy deployment and uninstallation. Configure firewall rules and test deployment on clean Windows environment.",
+      "details": "Use WiX Toolset (latest, e.g., 4.x) or Advanced Installer to bundle Node.js service, Electron app, and SQLite DB. Configure installer to set up firewall rules for required ports. Ensure installer can run without admin permissions if possible. Document installation and uninstallation flow. Test on clean Windows environment. Ensure uninstall removes all registry and filesystem artifacts.",
+      "testStrategy": "Test full install/uninstall cycle without admin permissions. Verify firewall rule presence. Check for leftover files or registry entries after uninstall.",
+      "priority": "medium",
+      "dependencies": [
+        4
+      ],
+      "status": "pending",
+      "subtasks": []
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+# Costs of development with AI
+
+## Task 1
+### Sub-task 1.1
+Openrouter: google/gemini-2.5-pro-preview
+0.38 USD
+Tokens used: 41.4k
+
+### Sub-task 1.2
+Openrouter: openai/gpt-4o-mini
+0.03 USD
+Tokens used: 38.6k
+Comment: Was problematic, not sure it was successful. Created file DBmanager.j
+
+# Advertised Prices
+## Openrouter
+
+### google/gemini-2.5-pro-preview
+Input price: $1.25 / 1M Tokens
+Output price: $10.00 / 1M Tokens
+Cache reads price: $0.31 / 1M Tokens
+Cache write price: $1.63 / 1M tokens
+
+## openai/gpt-4o-mini
+Input price: $0.15 / 1M tokens
+Output price: $0.60 / 1M tokens
+
+## anthropic/claude-3.7-sonnet
+Input price: $3 / 1M Tokens
+Output price: $15.00 / 1M Tokens
+Cache reads price: $0.30 / 1M Tokens
+Cache write price: $3.75 / 1M tokens
