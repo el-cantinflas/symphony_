@@ -46,7 +46,7 @@
             3
           ],
           "details": "Run 'git init', create a .gitignore file (excluding node_modules, database files, etc.), and make the first commit with the initial project structure and documentation.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 5,

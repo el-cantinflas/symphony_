@@ -29,7 +29,7 @@ Create a DBManager.js or similar file to manage database connections and schema 
 ### Details:
 Establish folders such as 'src', 'public', and 'Database'. Add README.md with setup instructions, and include comments in code for clarity.
 
-## 4. Initialize Version Control with Git [pending]
+## 4. Initialize Version Control with Git [done]
 ### Dependencies: 1.3
 ### Description: Set up git for version control, including .gitignore and initial commit.
 ### Details:
