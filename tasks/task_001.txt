@@ -1,6 +1,6 @@
 # Task ID: 1
 # Title: Setup Project Repository and Core Infrastructure
-# Status: in-progress
+# Status: done
 # Dependencies: None
 # Priority: high
 # Description: Initialize the project repository with Node.js, Electron, and SQLite dependencies. Define the SQLite schema for config and logs tables. Set up basic project structure and documentation.
@@ -35,7 +35,7 @@ Establish folders such as 'src', 'public', and 'Database'. Add README.md with se
 ### Details:
 Run 'git init', create a .gitignore file (excluding node_modules, database files, etc.), and make the first commit with the initial project structure and documentation.
 
-## 5. Verify Project Structure and Database Initialization [pending]
+## 5. Verify Project Structure and Database Initialization [done]
 ### Dependencies: 1.2, 1.3, 1.4
 ### Description: Test the project setup by running the application, checking package.json, confirming SQLite DB file creation, table presence, and documentation completeness.
 ### Details:

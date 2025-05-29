@@ -1,6 +1,6 @@
 # Task ID: 2
 # Title: Implement Node.js Windows Service with SQLite Integration
-# Status: pending
+# Status: in-progress
 # Dependencies: 1
 # Priority: high
 # Description: Develop a minimal Node.js background service that logs heartbeat events and initializes service state in SQLite. Ensure service can be started, stopped, and monitored.
@@ -9,3 +9,41 @@ Use node-windows (latest, e.g., 1.0.0) or pm2-windows-service (latest, e.g., 2.0
 
 # Test Strategy:
 Test service installation, startup, and shutdown. Verify heartbeat and state logs in SQLite. Check service management via Windows Services panel.
+
+# Subtasks:
+## 1. Windows Service Framework Selection and Setup [in-progress]
+### Dependencies: None
+### Description: Research, evaluate, and select the appropriate Windows service framework for the implementation, then set up the development environment.
+### Details:
+Compare .NET Framework ServiceBase, Node.js with node-windows, or Delphi options. Consider compatibility with Windows 11 and performance requirements. Install necessary development tools and create the initial project structure. Set up version control and establish coding standards for the service implementation.
+
+## 2. Service Lifecycle Management Implementation [pending]
+### Dependencies: 2.1
+### Description: Implement the core service lifecycle methods including start, stop, pause, and continue functionality with proper status reporting.
+### Details:
+Create service class that inherits from appropriate base class. Implement ServiceExecute, ServiceStart, ServiceStop, ServicePause, and ServiceContinue methods. Add proper status reporting using SetServiceStatus to indicate SERVICE_START_PENDING, SERVICE_RUNNING, SERVICE_STOP_PENDING, etc. Implement graceful shutdown and error handling for all lifecycle transitions.
+
+## 3. SQLite Integration for Logging [pending]
+### Dependencies: 2.2
+### Description: Integrate SQLite database for persistent logging of service activities and events.
+### Details:
+Set up SQLite database with appropriate schema for logging. Create data access layer for writing log entries. Implement log rotation and maintenance to prevent database growth issues. Ensure thread-safe database operations. Add configuration options for log levels and retention policies.
+
+## 4. Heartbeat Implementation [pending]
+### Dependencies: 2.2, 2.3
+### Description: Develop a heartbeat mechanism to monitor service health and activity.
+### Details:
+Implement background thread for periodic heartbeat generation. Create mechanism to write heartbeat events to SQLite database. Add configurable heartbeat interval. Implement health check logic to detect and report service issues. Create recovery mechanisms for handling service failures detected by missed heartbeats.
+
+## 5. Extensive Logging and Evaluation System [pending]
+### Dependencies: 2.3, 2.4
+### Description: Implement comprehensive logging system with multiple verbosity levels and evaluation capabilities.
+### Details:
+Create hierarchical logging system with DEBUG, INFO, WARNING, ERROR, and CRITICAL levels. Implement log filtering and formatting options. Add performance metrics collection and logging. Develop evaluation framework to assess service performance and reliability. Create log analysis tools to identify patterns and potential issues.
+
+## 6. Service Installation and Configuration Documentation [pending]
+### Dependencies: 2.1, 2.2, 2.3, 2.4, 2.5
+### Description: Create comprehensive documentation for service installation, configuration, and troubleshooting.
+### Details:
+Document installation procedures using SC.exe or installer packages. Create configuration guide with all available options and their effects. Develop troubleshooting guide for common issues. Document security best practices and permissions requirements. Create administration guide for monitoring and maintaining the service. Include examples of common usage scenarios and configuration patterns.
+

@@ -8,7 +8,7 @@
       "testStrategy": "Verify project structure, package.json, and SQLite schema. Test DB file creation and table presence. Validate documentation completeness.",
       "priority": "high",
       "dependencies": [],
-      "status": "in-progress",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -58,7 +58,7 @@
             4
           ],
           "details": "Start the Electron app, ensure the database file is created, tables exist as defined, and documentation accurately reflects the setup process. Validate that all files are tracked by git as intended.",
-          "status": "pending"
+          "status": "done"
         }
       ]
     },
@@ -72,8 +72,73 @@
       "dependencies": [
         1
       ],
-      "status": "pending",
-      "subtasks": []
+      "status": "in-progress",
+      "subtasks": [
+        {
+          "id": 1,
+          "title": "Windows Service Framework Selection and Setup",
+          "description": "Research, evaluate, and select the appropriate Windows service framework for the implementation, then set up the development environment.",
+          "dependencies": [],
+          "details": "Compare .NET Framework ServiceBase, Node.js with node-windows, or Delphi options. Consider compatibility with Windows 11 and performance requirements. Install necessary development tools and create the initial project structure. Set up version control and establish coding standards for the service implementation.",
+          "status": "in-progress"
+        },
+        {
+          "id": 2,
+          "title": "Service Lifecycle Management Implementation",
+          "description": "Implement the core service lifecycle methods including start, stop, pause, and continue functionality with proper status reporting.",
+          "dependencies": [
+            1
+          ],
+          "details": "Create service class that inherits from appropriate base class. Implement ServiceExecute, ServiceStart, ServiceStop, ServicePause, and ServiceContinue methods. Add proper status reporting using SetServiceStatus to indicate SERVICE_START_PENDING, SERVICE_RUNNING, SERVICE_STOP_PENDING, etc. Implement graceful shutdown and error handling for all lifecycle transitions.",
+          "status": "pending"
+        },
+        {
+          "id": 3,
+          "title": "SQLite Integration for Logging",
+          "description": "Integrate SQLite database for persistent logging of service activities and events.",
+          "dependencies": [
+            2
+          ],
+          "details": "Set up SQLite database with appropriate schema for logging. Create data access layer for writing log entries. Implement log rotation and maintenance to prevent database growth issues. Ensure thread-safe database operations. Add configuration options for log levels and retention policies.",
+          "status": "pending"
+        },
+        {
+          "id": 4,
+          "title": "Heartbeat Implementation",
+          "description": "Develop a heartbeat mechanism to monitor service health and activity.",
+          "dependencies": [
+            2,
+            3
+          ],
+          "details": "Implement background thread for periodic heartbeat generation. Create mechanism to write heartbeat events to SQLite database. Add configurable heartbeat interval. Implement health check logic to detect and report service issues. Create recovery mechanisms for handling service failures detected by missed heartbeats.",
+          "status": "pending"
+        },
+        {
+          "id": 5,
+          "title": "Extensive Logging and Evaluation System",
+          "description": "Implement comprehensive logging system with multiple verbosity levels and evaluation capabilities.",
+          "dependencies": [
+            3,
+            4
+          ],
+          "details": "Create hierarchical logging system with DEBUG, INFO, WARNING, ERROR, and CRITICAL levels. Implement log filtering and formatting options. Add performance metrics collection and logging. Develop evaluation framework to assess service performance and reliability. Create log analysis tools to identify patterns and potential issues.",
+          "status": "pending"
+        },
+        {
+          "id": 6,
+          "title": "Service Installation and Configuration Documentation",
+          "description": "Create comprehensive documentation for service installation, configuration, and troubleshooting.",
+          "dependencies": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "details": "Document installation procedures using SC.exe or installer packages. Create configuration guide with all available options and their effects. Develop troubleshooting guide for common issues. Document security best practices and permissions requirements. Create administration guide for monitoring and maintaining the service. Include examples of common usage scenarios and configuration patterns.",
+          "status": "pending"
+        }
+      ]
     },
     {
       "id": 3,
