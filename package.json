@@ -8,6 +8,11 @@
     "service": "node src/service.js",
     "rebuild": "electron-rebuild",
     "postinstall": "electron-rebuild -v $(node -p \"require('electron/package.json').version\") -f -w better-sqlite3",
+    "service:install": "node src/service.js --install",
+    "service:uninstall": "node src/service.js --uninstall",
+    "service:start": "node src/service.js --start",
+    "service:stop": "node src/service.js --stop",
+    "service:restart": "node src/service.js --restart",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -26,5 +31,8 @@
     "@electron/rebuild": "^4.0.1",
     "better-sqlite3": "^11.10.0",
     "electron": "^36.3.1"
+  },
+  "dependencies": {
+    "node-windows": "^1.0.0-beta.8"
   }
 }
