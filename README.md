@@ -10,6 +10,10 @@ This application is designed to test whether a Node.js-based Windows Service can
 - Process and forward data to external systems
 - Be installed/removed easily via MSI without admin permissions
 
+## Documentation
+
+- **[Service Installation and Configuration Guide](docs/service_documentation.md)**: Detailed instructions for installing, configuring, and managing the Windows service.
+
 ## Project Structure
 
 ```

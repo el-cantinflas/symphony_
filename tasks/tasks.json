@@ -72,7 +72,7 @@
       "dependencies": [
         1
       ],
-      "status": "in-progress",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -136,7 +136,7 @@
             5
           ],
           "details": "Document installation procedures using SC.exe or installer packages. Create configuration guide with all available options and their effects. Develop troubleshooting guide for common issues. Document security best practices and permissions requirements. Create administration guide for monitoring and maintaining the service. Include examples of common usage scenarios and configuration patterns.",
-          "status": "pending"
+          "status": "done"
         }
       ]
     },
