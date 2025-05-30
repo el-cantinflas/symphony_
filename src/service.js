@@ -7,37 +7,19 @@
  */
 
 const path = require('path');
-const sqlite3 = require('better-sqlite3');
-const { initializeSchema } = require('./DBManager');
+// Import addLogEntry and db from DBManager
+const { addLogEntry, db } = require('./DBManager');
 
-// Initialize database
-initializeSchema();
 
-// Path to the SQLite database file
-const dbPath = path.join(__dirname, '..', 'Database', 'database.sqlite');
-const db = sqlite3(dbPath, { verbose: console.log });
-
-/**
- * Log an event to the database
- * @param {string} event - The event name or type
- * @param {object} data - Data associated with the event
- */
-function logEvent(event, data = {}) {
-  try {
-    const stmt = db.prepare('INSERT INTO logs (event, data) VALUES (?, ?)');
-    stmt.run(event, JSON.stringify(data));
-    console.log(`Logged event: ${event}`);
-  } catch (error) {
-    console.error('Error logging event:', error);
-  }
-}
+// The DBManager module already initializes the schema and exports the db instance.
+// No need to initialize sqlite3 or schema here directly.
 
 /**
  * Heartbeat function that runs periodically to indicate service is alive
  */
 function heartbeat() {
   const timestamp = new Date().toISOString();
-  logEvent('heartbeat', { timestamp, status: 'alive' });
+  addLogEntry('heartbeat', { timestamp, status: 'alive' });
   console.log(`Heartbeat logged at ${timestamp}`);
 }
 
@@ -50,10 +32,9 @@ function initService() {
   // managed by node-windows.
   console.log('Attempting to initialize Orderwise Local Sync Service...');
   try {
-    // Ensure DB is accessible before extensive logging
-    // A simple query to check DB connection health, if necessary, could be added here.
-    // For now, we assume db object is valid if no crash occurred during its initialization.
-    logEvent('service_init_started', {
+    // DBManager.js handles DB initialization.
+    // addLogEntry will use the db instance from DBManager.
+    addLogEntry('service_init_started', {
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || 'unknown'
     });
@@ -63,7 +44,7 @@ function initService() {
     // For now, console.error will be the fallback.
   }
 
-  logEvent('service_start', {
+  addLogEntry('service_start', {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || 'unknown'
   });
@@ -71,41 +52,57 @@ function initService() {
   console.log('Orderwise Local Sync Service started');
   
   // Set up heartbeat interval (every minute)
-  setInterval(heartbeat, 60000);
+  const heartbeatInterval = setInterval(heartbeat, 60000); // Store interval ID
   
   // Initial heartbeat
   heartbeat();
+
+  return heartbeatInterval; // Return interval ID for potential cleanup
 }
 
 /**
  * Handle service stop event
  */
-function stopService() {
+function stopService(heartbeatInterval) { // Accept interval ID
   // This function is called on SIGTERM/SIGINT, which node-windows
   // sends to stop the service. This is the main cleanup point.
   console.log('Attempting to stop Orderwise Local Sync Service...');
-  logEvent('service_stop', { timestamp: new Date().toISOString() });
+  addLogEntry('service_stop', { timestamp: new Date().toISOString() });
   console.log('Orderwise Local Sync Service stopped');
+
+  // Clear the heartbeat interval
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    console.log('Heartbeat interval cleared.');
+  }
   
-  // Close database connection
+  // Close database connection (using db instance from DBManager)
   if (db && db.open) {
-    db.close();
-    console.log('Database connection closed.');
+    try {
+      db.close();
+      console.log('Database connection closed.');
+    } catch (error) {
+      console.error('Error closing database connection:', error);
+    }
   }
   
   // Allow process to exit
   process.exit(0);
 }
 
-// Register process event handlers
-process.on('SIGTERM', stopService);
-process.on('SIGINT', stopService);
+// Start the service and get the interval ID
+const currentHeartbeatInterval = initService();
 
-// Start the service
-initService();
+// Register process event handlers, passing the interval ID
+process.on('SIGTERM', () => stopService(currentHeartbeatInterval));
+process.on('SIGINT', () => stopService(currentHeartbeatInterval));
+
 
 module.exports = {
-  logEvent,
+  // logEvent is now addLogEntry from DBManager, no need to export it from here
+  // if it's only used internally or other modules can import it from DBManager directly.
+  // For clarity, if other parts of *this* service module needed it, they'd use addLogEntry.
+  // If external modules need to log, they should use DBManager.addLogEntry.
   heartbeat,
   initService,
   stopService
@@ -152,44 +149,44 @@ const svc = new Service({
 // process is available as a service.
 svc.on('install', function() {
   console.log('Service installed.');
-  logEvent('service_installed', { name: svc.name });
+  addLogEntry('service_installed', { name: svc.name });
   svc.start();
   console.log('Service started.');
 });
 
 svc.on('alreadyinstalled', function() {
   console.log('This service is already installed.');
-  logEvent('service_already_installed', { name: svc.name });
+  addLogEntry('service_already_installed', { name: svc.name });
 });
 
 svc.on('invalidinstallation', function() {
   console.log('This service is not installed.');
-  logEvent('service_invalid_installation', { name: svc.name });
+  addLogEntry('service_invalid_installation', { name: svc.name });
 });
 
 svc.on('uninstall', function() {
   console.log('Service uninstalled.');
-  logEvent('service_uninstalled', { name: svc.name });
+  addLogEntry('service_uninstalled', { name: svc.name });
   console.log('The service exists: ', svc.exists);
 });
 
 svc.on('start', function() {
   console.log(svc.name + ' started!');
-  logEvent('service_handler_started', { name: svc.name });
+  addLogEntry('service_handler_started', { name: svc.name });
   // The initService() is already called at the bottom of the script,
   // so it will run when the service starts the script.
 });
 
 svc.on('stop', function() {
   console.log(svc.name + ' stopped!');
-  logEvent('service_handler_stopped', { name: svc.name });
+  addLogEntry('service_handler_stopped', { name: svc.name });
   // The stopService() is handled by SIGTERM/SIGINT,
   // node-windows should send these signals.
 });
 
 svc.on('error', function(err) {
   console.error('Service error:', err);
-  logEvent('service_error', { name: svc.name, error: err.message });
+  addLogEntry('service_error', { name: svc.name, error: err.message, stack: err.stack });
 });
 
 // Check if the script is being run as a service or directly

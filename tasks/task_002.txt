@@ -17,13 +17,13 @@ Test service installation, startup, and shutdown. Verify heartbeat and state log
 ### Details:
 Compare .NET Framework ServiceBase, Node.js with node-windows, or Delphi options. Consider compatibility with Windows 11 and performance requirements. Install necessary development tools and create the initial project structure. Set up version control and establish coding standards for the service implementation.
 
-## 2. Service Lifecycle Management Implementation [pending]
+## 2. Service Lifecycle Management Implementation [done]
 ### Dependencies: 2.1
 ### Description: Implement the core service lifecycle methods including start, stop, pause, and continue functionality with proper status reporting.
 ### Details:
 Create service class that inherits from appropriate base class. Implement ServiceExecute, ServiceStart, ServiceStop, ServicePause, and ServiceContinue methods. Add proper status reporting using SetServiceStatus to indicate SERVICE_START_PENDING, SERVICE_RUNNING, SERVICE_STOP_PENDING, etc. Implement graceful shutdown and error handling for all lifecycle transitions.
 
-## 3. SQLite Integration for Logging [pending]
+## 3. SQLite Integration for Logging [in-progress]
 ### Dependencies: 2.2
 ### Description: Integrate SQLite database for persistent logging of service activities and events.
 ### Details:

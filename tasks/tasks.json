@@ -90,7 +90,7 @@
             1
           ],
           "details": "Create service class that inherits from appropriate base class. Implement ServiceExecute, ServiceStart, ServiceStop, ServicePause, and ServiceContinue methods. Add proper status reporting using SetServiceStatus to indicate SERVICE_START_PENDING, SERVICE_RUNNING, SERVICE_STOP_PENDING, etc. Implement graceful shutdown and error handling for all lifecycle transitions.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 3,
@@ -100,7 +100,7 @@
             2
           ],
           "details": "Set up SQLite database with appropriate schema for logging. Create data access layer for writing log entries. Implement log rotation and maintenance to prevent database growth issues. Ensure thread-safe database operations. Add configuration options for log levels and retention policies.",
-          "status": "pending"
+          "status": "in-progress"
         },
         {
           "id": 4,

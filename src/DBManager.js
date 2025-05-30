@@ -26,9 +26,24 @@ function initializeSchema() {
     )`);
 }
 
-// Export the initializeSchema function for use in other modules
+// Function to add a log entry
+function addLogEntry(event, data = null) {
+    try {
+        const stmt = db.prepare('INSERT INTO logs (event, data) VALUES (?, ?)');
+        const result = stmt.run(event, data ? JSON.stringify(data) : null);
+        return result.lastInsertRowid;
+    } catch (error) {
+        console.error('Failed to add log entry:', error);
+        // In a real service, consider a fallback logging mechanism if DB fails
+        return null;
+    }
+}
+
+// Export the db instance and functions for use in other modules
 module.exports = {
+    db, // Exporting the db instance itself
     initializeSchema,
+    addLogEntry,
 };
 
 // Initialize the schema when this module is loaded
