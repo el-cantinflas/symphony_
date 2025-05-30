@@ -100,7 +100,7 @@
             2
           ],
           "details": "Set up SQLite database with appropriate schema for logging. Create data access layer for writing log entries. Implement log rotation and maintenance to prevent database growth issues. Ensure thread-safe database operations. Add configuration options for log levels and retention policies.",
-          "status": "in-progress"
+          "status": "done"
         },
         {
           "id": 4,
@@ -111,7 +111,7 @@
             3
           ],
           "details": "Implement background thread for periodic heartbeat generation. Create mechanism to write heartbeat events to SQLite database. Add configurable heartbeat interval. Implement health check logic to detect and report service issues. Create recovery mechanisms for handling service failures detected by missed heartbeats.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 5,

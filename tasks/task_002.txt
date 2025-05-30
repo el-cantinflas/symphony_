@@ -23,13 +23,13 @@ Compare .NET Framework ServiceBase, Node.js with node-windows, or Delphi options
 ### Details:
 Create service class that inherits from appropriate base class. Implement ServiceExecute, ServiceStart, ServiceStop, ServicePause, and ServiceContinue methods. Add proper status reporting using SetServiceStatus to indicate SERVICE_START_PENDING, SERVICE_RUNNING, SERVICE_STOP_PENDING, etc. Implement graceful shutdown and error handling for all lifecycle transitions.
 
-## 3. SQLite Integration for Logging [in-progress]
+## 3. SQLite Integration for Logging [done]
 ### Dependencies: 2.2
 ### Description: Integrate SQLite database for persistent logging of service activities and events.
 ### Details:
 Set up SQLite database with appropriate schema for logging. Create data access layer for writing log entries. Implement log rotation and maintenance to prevent database growth issues. Ensure thread-safe database operations. Add configuration options for log levels and retention policies.
 
-## 4. Heartbeat Implementation [pending]
+## 4. Heartbeat Implementation [done]
 ### Dependencies: 2.2, 2.3
 ### Description: Develop a heartbeat mechanism to monitor service health and activity.
 ### Details:

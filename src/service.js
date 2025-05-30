@@ -7,20 +7,41 @@
  */
 
 const path = require('path');
-// Import addLogEntry and db from DBManager
-const { addLogEntry, db } = require('./DBManager');
+// Import addLogEntry, db, getConfigValue, and setConfigValue from DBManager
+const { addLogEntry, db, getConfigValue, setConfigValue } = require('./DBManager');
 
 
 // The DBManager module already initializes the schema and exports the db instance.
 // No need to initialize sqlite3 or schema here directly.
 
+const DEFAULT_HEARTBEAT_INTERVAL_MS = 60000; // Default to 1 minute
+const HEARTBEAT_CONFIG_KEY = 'heartbeatIntervalMs';
+
 /**
  * Heartbeat function that runs periodically to indicate service is alive
+ * and performs basic health checks.
  */
 function heartbeat() {
   const timestamp = new Date().toISOString();
-  addLogEntry('heartbeat', { timestamp, status: 'alive' });
-  console.log(`Heartbeat logged at ${timestamp}`);
+  let status = 'alive';
+  let healthDetails = {};
+
+  // Basic health check: Ensure DB connection is open
+  if (!db || !db.open) {
+    status = 'degraded';
+    healthDetails.dbConnection = 'closed_or_unavailable';
+    addLogEntry('health_check_fail', {
+      timestamp,
+      reason: 'Database connection is not open.',
+      component: 'DBManager'
+    });
+    console.error(`Heartbeat: Health check failed at ${timestamp} - DB connection closed.`);
+  } else {
+    healthDetails.dbConnection = 'open';
+  }
+
+  addLogEntry('heartbeat', { timestamp, status, healthDetails });
+  console.log(`Heartbeat logged at ${timestamp}, status: ${status}`);
 }
 
 /**
@@ -50,14 +71,25 @@ function initService() {
   });
   
   console.log('Orderwise Local Sync Service started');
+
+  // Get heartbeat interval from config, or use default
+  let currentHeartbeatIntervalMs = parseInt(getConfigValue(HEARTBEAT_CONFIG_KEY), 10);
+  if (isNaN(currentHeartbeatIntervalMs) || currentHeartbeatIntervalMs <= 0) {
+    console.log(`Heartbeat interval not found or invalid in config, using default: ${DEFAULT_HEARTBEAT_INTERVAL_MS}ms`);
+    currentHeartbeatIntervalMs = DEFAULT_HEARTBEAT_INTERVAL_MS;
+    // Optionally, save the default to config if it wasn't there
+    // setConfigValue(HEARTBEAT_CONFIG_KEY, currentHeartbeatIntervalMs.toString());
+  } else {
+    console.log(`Using heartbeat interval from config: ${currentHeartbeatIntervalMs}ms`);
+  }
   
-  // Set up heartbeat interval (every minute)
-  const heartbeatInterval = setInterval(heartbeat, 60000); // Store interval ID
+  // Set up heartbeat interval
+  const heartbeatIntervalId = setInterval(heartbeat, currentHeartbeatIntervalMs); // Store interval ID
   
   // Initial heartbeat
   heartbeat();
 
-  return heartbeatInterval; // Return interval ID for potential cleanup
+  return heartbeatIntervalId; // Return interval ID for potential cleanup
 }
 
 /**

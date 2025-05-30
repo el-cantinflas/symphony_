@@ -39,11 +39,38 @@ function addLogEntry(event, data = null) {
     }
 }
 
+// Function to get a configuration value
+function getConfigValue(key, defaultValue = null) {
+    try {
+        const stmt = db.prepare('SELECT value FROM config WHERE key = ?');
+        const row = stmt.get(key);
+        return row ? row.value : defaultValue;
+    } catch (error) {
+        console.error(`Failed to get config value for key "${key}":`, error);
+        return defaultValue;
+    }
+}
+
+// Function to set a configuration value
+function setConfigValue(key, value) {
+    try {
+        const stmt = db.prepare('INSERT OR REPLACE INTO config (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)');
+        stmt.run(key, value);
+        console.log(`Config value set for key "${key}"`);
+        return true;
+    } catch (error) {
+        console.error(`Failed to set config value for key "${key}":`, error);
+        return false;
+    }
+}
+
 // Export the db instance and functions for use in other modules
 module.exports = {
     db, // Exporting the db instance itself
     initializeSchema,
     addLogEntry,
+    getConfigValue,
+    setConfigValue,
 };
 
 // Initialize the schema when this module is loaded
