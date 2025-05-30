@@ -11,7 +11,7 @@ Use node-windows (latest, e.g., 1.0.0) or pm2-windows-service (latest, e.g., 2.0
 Test service installation, startup, and shutdown. Verify heartbeat and state logs in SQLite. Check service management via Windows Services panel.
 
 # Subtasks:
-## 1. Windows Service Framework Selection and Setup [in-progress]
+## 1. Windows Service Framework Selection and Setup [done]
 ### Dependencies: None
 ### Description: Research, evaluate, and select the appropriate Windows service framework for the implementation, then set up the development environment.
 ### Details:

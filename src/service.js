@@ -45,7 +45,25 @@ function heartbeat() {
  * Initialize the service
  */
 function initService() {
-  logEvent('service_start', { 
+  // This function is called when the Node.js script starts,
+  // acting as the main entry point for the service logic when
+  // managed by node-windows.
+  console.log('Attempting to initialize Orderwise Local Sync Service...');
+  try {
+    // Ensure DB is accessible before extensive logging
+    // A simple query to check DB connection health, if necessary, could be added here.
+    // For now, we assume db object is valid if no crash occurred during its initialization.
+    logEvent('service_init_started', {
+      timestamp: new Date().toISOString(),
+      version: process.env.npm_package_version || 'unknown'
+    });
+  } catch (error) {
+    console.error('Critical error during initial service logging, DB might be inaccessible:', error);
+    // Consider alternative logging here if primary DB logging fails (e.g., Windows Event Log via node-windows)
+    // For now, console.error will be the fallback.
+  }
+
+  logEvent('service_start', {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || 'unknown'
   });
@@ -63,11 +81,17 @@ function initService() {
  * Handle service stop event
  */
 function stopService() {
+  // This function is called on SIGTERM/SIGINT, which node-windows
+  // sends to stop the service. This is the main cleanup point.
+  console.log('Attempting to stop Orderwise Local Sync Service...');
   logEvent('service_stop', { timestamp: new Date().toISOString() });
   console.log('Orderwise Local Sync Service stopped');
   
   // Close database connection
-  db.close();
+  if (db && db.open) {
+    db.close();
+    console.log('Database connection closed.');
+  }
   
   // Allow process to exit
   process.exit(0);
@@ -86,6 +110,29 @@ module.exports = {
   initService,
   stopService
 };
+
+// Service Lifecycle Management with node-windows:
+//
+// - Start:
+//   When node-windows starts the service, it executes this script.
+//   The `initService()` function, called at the bottom of this script (outside of specific command flags),
+//   serves as the entry point for the service's main logic.
+//   The `svc.on('start', ...)` event is a notification from node-windows that it has started the script.
+//
+// - Stop:
+//   When node-windows stops the service, it sends a SIGTERM signal (by default) to this script.
+//   The `process.on('SIGTERM', stopService)` handler catches this signal and calls `stopService()`,
+//   which performs cleanup (like closing the database) and then exits the process.
+//   The `svc.on('stop', ...)` event is a notification from node-windows that it has issued the stop.
+//
+// - Pause/Continue:
+//   `node-windows` does not provide direct support for 'pause' and 'continue' lifecycle events
+//   that would trigger specific handlers within the Node.js script like `OnPause()` or `OnContinue()`
+//   in some native service frameworks. A Node.js service managed by `node-windows` is typically
+//   either running or stopped. If pause/continue-like behavior is required (e.g., temporarily
+//   halting specific tasks without stopping the entire service), it must be implemented at the
+//   application level and triggered via a custom mechanism (e.g., IPC, file watching, API call).
+//
 
 // Windows Service integration using node-windows
 const Service = require('node-windows').Service;
