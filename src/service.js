@@ -7,8 +7,8 @@
  */
 
 const path = require('path');
-// Import addLogEntry, db, getConfigValue, and setConfigValue from DBManager
-const { addLogEntry, db, getConfigValue, setConfigValue } = require('./DBManager');
+// Import addLogEntry, db, getConfigValue, setConfigValue, and LOG_LEVELS from DBManager
+const { addLogEntry, db, getConfigValue, setConfigValue, LOG_LEVELS } = require('./DBManager');
 
 
 // The DBManager module already initializes the schema and exports the db instance.
@@ -30,7 +30,7 @@ function heartbeat() {
   if (!db || !db.open) {
     status = 'degraded';
     healthDetails.dbConnection = 'closed_or_unavailable';
-    addLogEntry('health_check_fail', {
+    addLogEntry(LOG_LEVELS.ERROR.name, 'health_check_fail', {
       timestamp,
       reason: 'Database connection is not open.',
       component: 'DBManager'
@@ -40,7 +40,7 @@ function heartbeat() {
     healthDetails.dbConnection = 'open';
   }
 
-  addLogEntry('heartbeat', { timestamp, status, healthDetails });
+  addLogEntry(LOG_LEVELS.INFO.name, 'heartbeat', { timestamp, status, healthDetails });
   console.log(`Heartbeat logged at ${timestamp}, status: ${status}`);
 }
 
@@ -55,7 +55,7 @@ function initService() {
   try {
     // DBManager.js handles DB initialization.
     // addLogEntry will use the db instance from DBManager.
-    addLogEntry('service_init_started', {
+    addLogEntry(LOG_LEVELS.INFO.name, 'service_init_started', {
       timestamp: new Date().toISOString(),
       version: process.env.npm_package_version || 'unknown'
     });
@@ -63,9 +63,17 @@ function initService() {
     console.error('Critical error during initial service logging, DB might be inaccessible:', error);
     // Consider alternative logging here if primary DB logging fails (e.g., Windows Event Log via node-windows)
     // For now, console.error will be the fallback.
+    // Attempt to log critical failure if addLogEntry is available and DB might be an issue for it
+    if (typeof addLogEntry === 'function') {
+        addLogEntry(LOG_LEVELS.CRITICAL.name, 'service_init_log_failure', {
+            timestamp: new Date().toISOString(),
+            error: error.message,
+            details: 'Failed during initial service_init_started log attempt.'
+        });
+    }
   }
 
-  addLogEntry('service_start', {
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_start', {
     timestamp: new Date().toISOString(),
     version: process.env.npm_package_version || 'unknown'
   });
@@ -99,7 +107,7 @@ function stopService(heartbeatInterval) { // Accept interval ID
   // This function is called on SIGTERM/SIGINT, which node-windows
   // sends to stop the service. This is the main cleanup point.
   console.log('Attempting to stop Orderwise Local Sync Service...');
-  addLogEntry('service_stop', { timestamp: new Date().toISOString() });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_stop', { timestamp: new Date().toISOString() });
   console.log('Orderwise Local Sync Service stopped');
 
   // Clear the heartbeat interval
@@ -181,44 +189,44 @@ const svc = new Service({
 // process is available as a service.
 svc.on('install', function() {
   console.log('Service installed.');
-  addLogEntry('service_installed', { name: svc.name });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_installed', { name: svc.name });
   svc.start();
   console.log('Service started.');
 });
 
 svc.on('alreadyinstalled', function() {
   console.log('This service is already installed.');
-  addLogEntry('service_already_installed', { name: svc.name });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_already_installed', { name: svc.name });
 });
 
 svc.on('invalidinstallation', function() {
   console.log('This service is not installed.');
-  addLogEntry('service_invalid_installation', { name: svc.name });
+  addLogEntry(LOG_LEVELS.WARNING.name, 'service_invalid_installation', { name: svc.name });
 });
 
 svc.on('uninstall', function() {
   console.log('Service uninstalled.');
-  addLogEntry('service_uninstalled', { name: svc.name });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_uninstalled', { name: svc.name });
   console.log('The service exists: ', svc.exists);
 });
 
 svc.on('start', function() {
   console.log(svc.name + ' started!');
-  addLogEntry('service_handler_started', { name: svc.name });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_handler_started', { name: svc.name });
   // The initService() is already called at the bottom of the script,
   // so it will run when the service starts the script.
 });
 
 svc.on('stop', function() {
   console.log(svc.name + ' stopped!');
-  addLogEntry('service_handler_stopped', { name: svc.name });
+  addLogEntry(LOG_LEVELS.INFO.name, 'service_handler_stopped', { name: svc.name });
   // The stopService() is handled by SIGTERM/SIGINT,
   // node-windows should send these signals.
 });
 
 svc.on('error', function(err) {
   console.error('Service error:', err);
-  addLogEntry('service_error', { name: svc.name, error: err.message, stack: err.stack });
+  addLogEntry(LOG_LEVELS.ERROR.name, 'service_error', { name: svc.name, error: err.message, stack: err.stack });
 });
 
 // Check if the script is being run as a service or directly
