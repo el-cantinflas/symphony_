@@ -23,7 +23,7 @@ Set up Axios as the HTTP client. Integrate retry logic that handles transient er
 ### Details:
 Design a schema for storing API configuration parameters (e.g., endpoints, credentials, retry settings) in SQLite. Implement CRUD operations for managing configurations and ensure secure handling of sensitive data.
 
-## 3. Mock Endpoint and Payload Implementation [pending]
+## 3. Mock Endpoint and Payload Implementation [done]
 ### Dependencies: 3.2
 ### Description: Create mock API endpoints and payloads to simulate real API interactions for testing and development purposes.
 ### Details:
