@@ -150,7 +150,7 @@
       "dependencies": [
         2
       ],
-      "status": "pending",
+      "status": "in-progress",
       "subtasks": [
         {
           "id": 1,
@@ -158,7 +158,7 @@
           "description": "Implement an HTTP client using Axios, including robust retry logic with exponential backoff to handle network failures and timeouts.",
           "dependencies": [],
           "details": "Set up Axios as the HTTP client. Integrate retry logic that handles transient errors and network issues, using exponential backoff to avoid overwhelming the server. Ensure error handling provides meaningful messages and status codes.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 2,
@@ -168,7 +168,7 @@
             1
           ],
           "details": "Design a schema for storing API configuration parameters (e.g., endpoints, credentials, retry settings) in SQLite. Implement CRUD operations for managing configurations and ensure secure handling of sensitive data.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 3,

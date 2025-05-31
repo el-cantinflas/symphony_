@@ -1,16 +1,30 @@
 const axios = require('axios');
 const axiosRetry = require('axios-retry').default;
-const { addLogEntry, LOG_LEVELS } = require('./DBManager');
+const { addLogEntry, LOG_LEVELS, getApiConfig } = require('./DBManager');
+
+// Fetch API configuration
+const apiConfig = getApiConfig();
+
+// Log the fetched (and potentially validated/defaulted) API config for debugging
+// In a production scenario, sensitive parts of config like tokens shouldn't be logged directly.
+// For now, logging the structure helps confirm it's loaded.
+addLogEntry(LOG_LEVELS.DEBUG, 'ApiClientConfigLoaded', {
+    clientTimeoutMs: apiConfig.clientTimeoutMs,
+    retryMaxAttempts: apiConfig.retryMaxAttempts,
+    retryDelayFactorMs: apiConfig.retryDelayFactorMs,
+    // Do not log baseUrl or bearerToken here directly to avoid sensitive data in general logs
+    // but confirm they are part of the object if needed during specific debugging.
+});
+
 
 const apiClient = axios.create({
-  // Default timeout of 10 seconds
-  timeout: 10000,
+  timeout: apiConfig.clientTimeoutMs,
 });
 
 axiosRetry(apiClient, {
-  retries: 3, // Number of retries
+  retries: apiConfig.retryMaxAttempts,
   retryDelay: (retryCount) => {
-    return retryCount * 1000; // Time interval between retries
+    return retryCount * apiConfig.retryDelayFactorMs;
   },
   retryCondition: (error) => {
     // Retry on network errors or 5xx server errors

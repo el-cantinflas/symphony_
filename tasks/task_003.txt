@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Develop API Communication and Config Management
-# Status: pending
+# Status: in-progress
 # Dependencies: 2
 # Priority: medium
 # Description: Add API request module to Node.js service with retry and timeout logic. Implement config reader and validator from SQLite. Prepare mock payloads and test endpoints.
@@ -11,13 +11,13 @@ Use axios (latest, e.g., 1.x) for HTTP requests. Implement retry logic with expo
 Test successful and failed API calls. Validate config reading and validation. Check log entries for request metadata and error handling.
 
 # Subtasks:
-## 1. HTTP Client Setup with Axios and Retry Logic [pending]
+## 1. HTTP Client Setup with Axios and Retry Logic [done]
 ### Dependencies: None
 ### Description: Implement an HTTP client using Axios, including robust retry logic with exponential backoff to handle network failures and timeouts.
 ### Details:
 Set up Axios as the HTTP client. Integrate retry logic that handles transient errors and network issues, using exponential backoff to avoid overwhelming the server. Ensure error handling provides meaningful messages and status codes.
 
-## 2. Configuration Management with SQLite Integration [pending]
+## 2. Configuration Management with SQLite Integration [done]
 ### Dependencies: 3.1
 ### Description: Develop a configuration management system that stores and retrieves API settings using SQLite as the backend.
 ### Details:

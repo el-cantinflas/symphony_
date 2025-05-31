@@ -55,6 +55,22 @@ function initializeSchema() {
     if (currentLogLevel === null) {
         setConfigValue('currentLogLevel', LOG_LEVELS.INFO.name);
     }
+
+    // Set default API configuration values if not already set
+    const apiConfigDefaults = {
+        'api.orderwise.baseUrl': 'http://localhost:3001/api/orderwise',
+        'api.orderwise.bearerToken': 'YOUR_ORDERWISE_BEARER_TOKEN',
+        'api.externalwebhook.url': 'http://localhost:3002/webhook',
+        'api.client.timeoutMs': '10000',
+        'api.retry.maxAttempts': '3',
+        'api.retry.delayFactorMs': '1000'
+    };
+
+    for (const [key, value] of Object.entries(apiConfigDefaults)) {
+        if (getConfigValue(key) === null) {
+            setConfigValue(key, value);
+        }
+    }
 }
 
 // Function to add a log entry
@@ -103,6 +119,82 @@ function setConfigValue(key, value) {
     }
 }
 
+// Function to delete a configuration value
+function deleteConfigValue(key) {
+    try {
+        const stmt = db.prepare('DELETE FROM config WHERE key = ?');
+        const result = stmt.run(key);
+        if (result.changes > 0) {
+            console.log(`Config value deleted for key "${key}"`);
+            addLogEntry(LOG_LEVELS.INFO.name, 'CONFIG_DELETE_SUCCESS', { key });
+        } else {
+            console.log(`No config value found to delete for key "${key}"`);
+            addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_DELETE_NOT_FOUND', { key });
+        }
+        return result.changes > 0;
+    } catch (error) {
+        console.error(`Failed to delete config value for key "${key}":`, error);
+        addLogEntry(LOG_LEVELS.ERROR.name, 'CONFIG_DELETE_FAILED', { key, error: error.message });
+        return false;
+    }
+}
+
+// Function to get all relevant API configurations with validation and defaults
+function getApiConfig() {
+    const defaults = {
+        baseUrl: 'http://localhost:3001/api/orderwise',
+        bearerToken: 'YOUR_ORDERWISE_BEARER_TOKEN', // Sensitive: consider encryption at rest in future
+        externalWebhookUrl: 'http://localhost:3002/webhook',
+        clientTimeoutMs: 10000,
+        retryMaxAttempts: 3,
+        retryDelayFactorMs: 1000,
+    };
+
+    const config = {
+        baseUrl: getConfigValue('api.orderwise.baseUrl', defaults.baseUrl),
+        bearerToken: getConfigValue('api.orderwise.bearerToken', defaults.bearerToken),
+        externalWebhookUrl: getConfigValue('api.externalwebhook.url', defaults.externalWebhookUrl),
+        clientTimeoutMs: parseInt(getConfigValue('api.client.timeoutMs', defaults.clientTimeoutMs.toString()), 10),
+        retryMaxAttempts: parseInt(getConfigValue('api.retry.maxAttempts', defaults.retryMaxAttempts.toString()), 10),
+        retryDelayFactorMs: parseInt(getConfigValue('api.retry.delayFactorMs', defaults.retryDelayFactorMs.toString()), 10),
+    };
+
+    // Basic Validations
+    if (isNaN(config.clientTimeoutMs) || config.clientTimeoutMs <= 0) {
+        addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_INVALID', { key: 'api.client.timeoutMs', value: config.clientTimeoutMs, usingDefault: defaults.clientTimeoutMs });
+        config.clientTimeoutMs = defaults.clientTimeoutMs;
+    }
+    if (isNaN(config.retryMaxAttempts) || config.retryMaxAttempts < 0) {
+        addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_INVALID', { key: 'api.retry.maxAttempts', value: config.retryMaxAttempts, usingDefault: defaults.retryMaxAttempts });
+        config.retryMaxAttempts = defaults.retryMaxAttempts;
+    }
+    if (isNaN(config.retryDelayFactorMs) || config.retryDelayFactorMs <= 0) {
+        addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_INVALID', { key: 'api.retry.delayFactorMs', value: config.retryDelayFactorMs, usingDefault: defaults.retryDelayFactorMs });
+        config.retryDelayFactorMs = defaults.retryDelayFactorMs;
+    }
+
+    try {
+        new URL(config.baseUrl);
+    } catch (e) {
+        addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_INVALID_URL', { key: 'api.orderwise.baseUrl', value: config.baseUrl, usingDefault: defaults.baseUrl });
+        config.baseUrl = defaults.baseUrl;
+    }
+
+    try {
+        new URL(config.externalWebhookUrl);
+    } catch (e) {
+        addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_INVALID_URL', { key: 'api.externalwebhook.url', value: config.externalWebhookUrl, usingDefault: defaults.externalWebhookUrl });
+        config.externalWebhookUrl = defaults.externalWebhookUrl;
+    }
+    
+    if (!config.bearerToken || config.bearerToken === 'YOUR_ORDERWISE_BEARER_TOKEN') {
+         addLogEntry(LOG_LEVELS.WARNING.name, 'CONFIG_VALIDATION_DEFAULT_TOKEN', { key: 'api.orderwise.bearerToken' });
+    }
+
+    return config;
+}
+
+
 // Export the db instance and functions for use in other modules
 module.exports = {
     db, // Exporting the db instance itself
@@ -111,6 +203,8 @@ module.exports = {
     addLogEntry,
     getConfigValue,
     setConfigValue,
+    deleteConfigValue,
+    getApiConfig,
 };
 
 // Initialize the schema when this module is loaded
