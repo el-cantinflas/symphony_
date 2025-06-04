@@ -26,6 +26,21 @@ app.get('/mock/orderwise/v1/items', (req, res) => {
   });
 });
 
+// This is the route the ApiClient is currently hitting due to its baseURL
+app.get('/api/orderwise/mock/orderwise/v1/items', (req, res) => {
+  // Delegate to the original mock handler for simplicity
+  // Or duplicate the logic if preferred
+  console.log(`[Mock API] Delegating /api/orderwise/mock/orderwise/v1/items to /mock/orderwise/v1/items handler`);
+  res.json({
+    success: true,
+    data: [
+      { id: 'ITEM001', name: 'Sample Item 1 (via delegated route)', price: 10.99, stock: 100 },
+      { id: 'ITEM002', name: 'Sample Item 2 (via delegated route)', price: 5.49, stock: 50 },
+    ],
+    message: 'Items retrieved successfully via delegated route'
+  });
+});
+
 app.post('/mock/orderwise/v1/orders', (req, res) => {
   // Example: Create an order
   const orderData = req.body;
