@@ -1,6 +1,6 @@
 # Task ID: 3
 # Title: Develop API Communication and Config Management
-# Status: in-progress
+# Status: done
 # Dependencies: 2
 # Priority: medium
 # Description: Add API request module to Node.js service with retry and timeout logic. Implement config reader and validator from SQLite. Prepare mock payloads and test endpoints.
@@ -35,7 +35,7 @@ Implement mock endpoints that mimic expected API behavior and responses. Generat
 ### Details:
 Log all HTTP requests and responses, including headers, payloads, status codes, and timestamps. Ensure logs are structured, searchable, and can be filtered for debugging and auditing. Support configurable verbosity levels.
 
-## 5. Create and Run Evals, Verify Software Functionality [pending]
+## 5. Create and Run Evals, Verify Software Functionality [done]
 ### Dependencies: 3.4
 ### Description: Develop and execute evaluation scripts to test the API communication module, leveraging verbose logs to verify correct operation and handle edge cases.
 ### Details:

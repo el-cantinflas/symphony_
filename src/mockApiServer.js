@@ -75,7 +75,8 @@ app.post('/mock/external-webhook/event', (req, res) => {
 
 // --- Test Endpoints (as per task 3 details) ---
 // Endpoint 1: Simulates a successful Orderwise API call
-app.get('/mock/test/orderwise-success', (req, res) => {
+app.get('/api/orderwise/mock/test/orderwise-success', (req, res) => {
+  console.log(`[Mock API] Handling /api/orderwise/mock/test/orderwise-success`);
   res.json({
     success: true,
     message: 'Orderwise API test endpoint: Success!',
@@ -84,6 +85,7 @@ app.get('/mock/test/orderwise-success', (req, res) => {
 });
 
 // Endpoint 2: Simulates a successful External Webhook call (e.g., receiving data)
+// This endpoint is for a different base URL, so it should NOT have /api/orderwise
 app.post('/mock/test/webhook-receive', (req, res) => {
   console.log('[Mock Test Webhook] Received test data:', JSON.stringify(req.body, null, 2));
   res.status(200).json({
@@ -91,6 +93,35 @@ app.post('/mock/test/webhook-receive', (req, res) => {
     message: 'External Webhook test endpoint: Data received!',
     dataReceived: req.body
   });
+});
+
+// --- Endpoints for Advanced Retry and Error Testing ---
+let retrySuccessCounter = 0;
+app.get('/api/orderwise/mock/test/retry-then-success', (req, res) => {
+  retrySuccessCounter++;
+  if (retrySuccessCounter <= 2) {
+    console.log(`[Mock API] /api/orderwise/mock/test/retry-then-success - Attempt ${retrySuccessCounter}: Returning 500`);
+    res.status(500).json({ success: false, message: `Service unavailable (Attempt ${retrySuccessCounter})` });
+  } else {
+    console.log(`[Mock API] /api/orderwise/mock/test/retry-then-success - Attempt ${retrySuccessCounter}: Returning 200`);
+    res.json({ success: true, message: 'Finally succeeded!', attempt: retrySuccessCounter });
+    retrySuccessCounter = 0; // Reset for next test sequence
+  }
+});
+
+app.get('/api/orderwise/mock/test/always-fail', (req, res) => {
+  console.log('[Mock API] /api/orderwise/mock/test/always-fail: Returning 503');
+  res.status(503).json({ success: false, message: 'Service consistently unavailable' });
+});
+
+app.post('/api/orderwise/mock/test/client-error', (req, res) => {
+  const { data } = req.body;
+  if (!data) {
+    console.log('[Mock API] /api/orderwise/mock/test/client-error: Returning 400 - Missing data');
+    return res.status(400).json({ success: false, message: 'Client Error: Missing "data" in request body.' });
+  }
+  console.log('[Mock API] /api/orderwise/mock/test/client-error: Received data, but simulating a generic client error response for testing.');
+  res.status(400).json({ success: false, message: 'Simulated Client Error: Invalid input.', receivedData: data });
 });
 
 

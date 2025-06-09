@@ -150,7 +150,7 @@
       "dependencies": [
         2
       ],
-      "status": "in-progress",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -198,7 +198,7 @@
             4
           ],
           "details": "Write automated tests and evaluation scripts that exercise all major code paths, including error and retry scenarios. Analyze verbose logs to confirm correct behavior, identify issues, and ensure the module meets requirements.",
-          "status": "pending"
+          "status": "done"
         }
       ]
     },
@@ -212,7 +212,7 @@
       "dependencies": [
         3
       ],
-      "status": "pending",
+      "status": "in-progress",
       "subtasks": [
         {
           "id": 1,

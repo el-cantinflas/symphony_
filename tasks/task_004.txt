@@ -1,6 +1,6 @@
 # Task ID: 4
 # Title: Build Electron UI for Configuration and Log Monitoring
-# Status: pending
+# Status: in-progress
 # Dependencies: 3
 # Priority: medium
 # Description: Develop Electron desktop UI for configuring endpoints and monitoring logs. Save user inputs to SQLite and display recent logs.
