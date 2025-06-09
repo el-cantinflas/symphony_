@@ -12,6 +12,7 @@ const db = sqlite3(dbPath, { verbose: console.log });
 const LOG_LEVELS = {
     DEBUG: { name: 'DEBUG', severity: 0 },
     INFO: { name: 'INFO', severity: 1 },
+    SUCCESS: { name: 'SUCCESS', severity: 1 }, // Added for consistency
     WARNING: { name: 'WARNING', severity: 2 },
     ERROR: { name: 'ERROR', severity: 3 },
     CRITICAL: { name: 'CRITICAL', severity: 4 },

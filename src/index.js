@@ -105,8 +105,8 @@ ipcMain.handle('get-logs', async (event, limit) => {
 
 ipcMain.handle('test-orderwise', async () => {
   try {
-    // Use the centrally managed ApiClient which is configured via getApiConfig
-    const apiClient = new ApiClient();
+    const { baseUrl, bearerToken } = getApiConfig();
+    const apiClient = new ApiClient(baseUrl, bearerToken);
     await apiClient.checkConnection();
     addLogEntry(LOG_LEVELS.INFO.name, 'API_TEST_SUCCESS', { message: 'Connection successful.' });
     return { success: true, message: 'Connection successful.' };
@@ -125,7 +125,6 @@ ipcMain.handle('send-test-payload', async () => {
   }
   
   try {
-    // Use a temporary ApiClient for the external webhook
     const webhookApiClient = new ApiClient(externalWebhookUrl);
     const response = await webhookApiClient.post('', { message: 'This is a test payload from Orderwise Local Sync Validator.' });
     addLogEntry(LOG_LEVELS.INFO.name, 'WEBHOOK_TEST_SUCCESS', { status: response.status });
@@ -137,9 +136,34 @@ ipcMain.handle('send-test-payload', async () => {
 });
 
 ipcMain.handle('sync-now', async () => {
-  // This is a placeholder for the actual sync logic.
-  addLogEntry(LOG_LEVELS.INFO.name, 'MANUAL_SYNC_TRIGGERED', { message: 'Sync process started.' });
-  return { success: true, message: 'Sync process started.' };
+  addLogEntry(LOG_LEVELS.INFO.name, 'MANUAL_SYNC_TRIGGERED', { message: 'Manual sync process started.' });
+  try {
+    const { baseUrl, bearerToken, externalWebhookUrl } = getApiConfig();
+
+    // 1. Fetch data from Orderwise
+    addLogEntry(LOG_LEVELS.INFO.name, 'SYNC_FETCH_START', { message: 'Fetching data from Orderwise...' });
+    const orderwiseClient = new ApiClient(baseUrl, bearerToken);
+    // Using a placeholder endpoint. In a real scenario, this would be a specific API endpoint.
+    const response = await orderwiseClient.get('/orders?status=new');
+    const orders = response.data;
+    addLogEntry(LOG_LEVELS.INFO.name, 'SYNC_FETCH_SUCCESS', { message: `Fetched ${orders.length} orders.` });
+
+    // 2. Process and send data to webhook
+    if (orders.length > 0) {
+      addLogEntry(LOG_LEVELS.INFO.name, 'SYNC_WEBHOOK_START', { message: 'Sending data to external webhook...' });
+      const webhookClient = new ApiClient(externalWebhookUrl);
+      await webhookClient.post('/webhook', { orders });
+      addLogEntry(LOG_LEVELS.INFO.name, 'SYNC_WEBHOOK_SUCCESS', { message: 'Data sent to webhook successfully.' });
+    } else {
+      addLogEntry(LOG_LEVELS.INFO.name, 'SYNC_NO_DATA', { message: 'No new orders to sync.' });
+    }
+
+    addLogEntry(LOG_LEVELS.SUCCESS.name, 'MANUAL_SYNC_COMPLETE', { message: 'Manual sync process completed successfully.' });
+    return { success: true, message: 'Sync process completed successfully.' };
+  } catch (error) {
+    addLogEntry(LOG_LEVELS.ERROR.name, 'MANUAL_SYNC_FAILED', { error: error.message });
+    return { success: false, message: `Sync process failed: ${error.message}` };
+  }
 });
 
 // Function to send log updates to the renderer process

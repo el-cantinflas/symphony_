@@ -14,31 +14,21 @@ app.use((req, res, next) => {
 });
 
 // --- Orderwise API Mock Endpoints ---
-app.get('/mock/orderwise/v1/items', (req, res) => {
-  // Example: Get a list of items
-  res.json({
-    success: true,
-    data: [
-      { id: 'ITEM001', name: 'Sample Item 1', price: 10.99, stock: 100 },
-      { id: 'ITEM002', name: 'Sample Item 2', price: 5.49, stock: 50 },
-    ],
-    message: 'Items retrieved successfully'
-  });
+
+app.get('/api/orderwise/', (req, res) => {
+  res.json({ success: true, message: 'Connection to mock Orderwise API successful.' });
 });
 
-// This is the route the ApiClient is currently hitting due to its baseURL
-app.get('/api/orderwise/mock/orderwise/v1/items', (req, res) => {
-  // Delegate to the original mock handler for simplicity
-  // Or duplicate the logic if preferred
-  console.log(`[Mock API] Delegating /api/orderwise/mock/orderwise/v1/items to /mock/orderwise/v1/items handler`);
-  res.json({
-    success: true,
-    data: [
-      { id: 'ITEM001', name: 'Sample Item 1 (via delegated route)', price: 10.99, stock: 100 },
-      { id: 'ITEM002', name: 'Sample Item 2 (via delegated route)', price: 5.49, stock: 50 },
-    ],
-    message: 'Items retrieved successfully via delegated route'
-  });
+app.get('/api/orderwise/orders', (req, res) => {
+  const { status } = req.query;
+  if (status === 'new') {
+    res.json([
+      { id: 1, product: 'Widget', quantity: 2 },
+      { id: 2, product: 'Gadget', quantity: 1 },
+    ]);
+  } else {
+    res.json([]);
+  }
 });
 
 app.post('/mock/orderwise/v1/orders', (req, res) => {
@@ -60,6 +50,11 @@ app.post('/mock/orderwise/v1/orders', (req, res) => {
 });
 
 // --- External Webhook Mock Endpoint ---
+app.post('/webhook', (req, res) => {
+  console.log('[Mock Webhook] Received data:', JSON.stringify(req.body, null, 2));
+  res.status(200).json({ success: true, message: 'Webhook received data successfully.' });
+});
+
 app.post('/mock/external-webhook/event', (req, res) => {
   // Example: Receive an event notification
   const eventData = req.body;
