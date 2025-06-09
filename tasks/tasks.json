@@ -275,7 +275,7 @@
             3
           ],
           "details": "Use CSS and possibly frameworks to style the configuration screen and log viewer components. Implement responsive design principles to maintain usability on various desktop window sizes.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 7,
