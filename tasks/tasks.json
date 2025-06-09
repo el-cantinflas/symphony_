@@ -240,7 +240,7 @@
             1
           ],
           "details": "Implement a log viewer in the renderer process that can receive log data from the main process or backend. Include UI elements for viewing extensive verbose logs and support for real-time updates.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 4,

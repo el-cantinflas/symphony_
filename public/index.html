@@ -116,9 +116,18 @@
         </div>
         
         <h2>Logs</h2>
+        <div class="log-controls">
+           <input type="text" id="log-filter" placeholder="Filter logs...">
+           <select id="log-level-filter">
+               <option value="all">All Levels</option>
+               <option value="info">Info</option>
+               <option value="success">Success</option>
+               <option value="error">Error</option>
+           </select>
+        </div>
         <div class="logs" id="logs">
             <div class="log-entry">
-                <span class="timestamp">2025-05-28 14:00:00</span> - 
+                <span class="timestamp">2025-05-28 14:00:00</span> -
                 <span class="success">Application started successfully</span>
             </div>
         </div>
