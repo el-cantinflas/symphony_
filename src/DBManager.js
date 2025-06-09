@@ -194,6 +194,17 @@ function getApiConfig() {
     return config;
 }
 
+// Function to get recent log entries
+function getRecentLogs(limit = 20) {
+    try {
+        const stmt = db.prepare('SELECT * FROM logs ORDER BY timestamp DESC LIMIT ?');
+        return stmt.all(limit);
+    } catch (error) {
+        console.error('Failed to get recent logs:', error);
+        return [];
+    }
+}
+
 
 // Export the db instance and functions for use in other modules
 module.exports = {
@@ -205,6 +216,7 @@ module.exports = {
     setConfigValue,
     deleteConfigValue,
     getApiConfig,
+    getRecentLogs,
 };
 
 // Initialize the schema when this module is loaded

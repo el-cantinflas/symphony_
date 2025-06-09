@@ -15,7 +15,7 @@ const path = require('path');
 const { ipcMain } = require('electron');
 const { getConfigValue, setConfigValue, getRecentLogs, addLogEntry, LOG_LEVELS } = require('./DBManager');
 const ApiClient = require('./ApiClient');
-const { initializeSchema } = require('./DBManager');
+const { initializeSchema, getRecentLogs: getRecentLogsFromDB } = require('./DBManager');
 
 // Global reference to the window object to prevent garbage collection
 let mainWindow;
@@ -82,7 +82,7 @@ ipcMain.handle('save-config', async (event, config) => {
 });
 
 ipcMain.handle('get-logs', async (event, limit) => {
-  return getRecentLogs(limit);
+  return getRecentLogsFromDB(limit);
 });
 
 ipcMain.handle('test-orderwise', async () => {

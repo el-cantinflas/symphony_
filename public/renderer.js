@@ -147,26 +147,37 @@ async function loadLogs() {
 }
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Load initial data
-    loadConfig();
-    loadLogs();
-    
-    // Register event listeners
-    saveConfigButton.addEventListener('click', saveConfig);
-    testOrderwiseButton.addEventListener('click', testOrderwise);
-    testPayloadButton.addEventListener('click', sendTestPayload);
-    syncNowButton.addEventListener('click', syncNow);
-    
-    // Listen for log updates from the main process
-    window.api.onLogUpdate((log) => {
-        const data = JSON.parse(log.data || '{}');
-        const message = data.message || log.event;
-        const type = data.status === 'error' ? 'error' : 
-                     data.status === 'success' ? 'success' : 'info';
+/**
+ * Initialize the application
+ */
+function initializeApp() {
+    if (window.api) {
+        // Load initial data
+        loadConfig();
+        loadLogs();
         
-        addLogEntry(message, type);
-    });
-    
-    addLogEntry('Application initialized', 'success');
-});
+        // Register event listeners
+        saveConfigButton.addEventListener('click', saveConfig);
+        testOrderwiseButton.addEventListener('click', testOrderwise);
+        testPayloadButton.addEventListener('click', sendTestPayload);
+        syncNowButton.addEventListener('click', syncNow);
+        
+        // Listen for log updates from the main process
+        window.api.onLogUpdate((log) => {
+            const data = JSON.parse(log.data || '{}');
+            const message = data.message || log.event;
+            const type = data.status === 'error' ? 'error' :
+                         data.status === 'success' ? 'success' : 'info';
+            
+            addLogEntry(message, type);
+        });
+        
+        addLogEntry('Application initialized', 'success');
+    } else {
+        console.warn('API not ready, retrying...');
+        setTimeout(initializeApp, 100);
+    }
+}
+
+// Start the initialization process
+initializeApp();
