@@ -251,7 +251,7 @@
             2
           ],
           "details": "Set up SQLite in the Electron main process or a dedicated backend process. Implement methods to save, update, and fetch configuration data from the database, ensuring synchronization with the configuration UI.",
-          "status": "pending"
+          "status": "done"
         },
         {
           "id": 5,

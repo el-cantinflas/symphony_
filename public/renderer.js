@@ -44,8 +44,8 @@ async function loadConfig() {
     try {
         const config = await window.api.getConfig();
         if (config) {
-            apiUrlInput.value = config.apiUrl || '';
-            webhookUrlInput.value = config.webhookUrl || '';
+            apiUrlInput.value = config.baseUrl || '';
+            webhookUrlInput.value = config.externalWebhookUrl || '';
             bearerTokenInput.value = config.bearerToken || '';
             addLogEntry('Configuration loaded', 'success');
         }
@@ -60,13 +60,22 @@ async function loadConfig() {
 async function saveConfig() {
     try {
         const config = {
-            apiUrl: apiUrlInput.value,
-            webhookUrl: webhookUrlInput.value,
+            baseUrl: apiUrlInput.value,
+            externalWebhookUrl: webhookUrlInput.value,
             bearerToken: bearerTokenInput.value
         };
         
-        await window.api.saveConfig(config);
-        addLogEntry('Configuration saved successfully', 'success');
+        const updatedConfig = await window.api.saveConfig(config);
+        
+        // Reload the form with the potentially validated/defaulted values from the backend
+        if (updatedConfig) {
+            apiUrlInput.value = updatedConfig.baseUrl || '';
+            webhookUrlInput.value = updatedConfig.externalWebhookUrl || '';
+            bearerTokenInput.value = updatedConfig.bearerToken || '';
+            addLogEntry('Configuration saved and reloaded successfully', 'success');
+        } else {
+            addLogEntry('Configuration saved, but failed to retrieve updated values.', 'warning');
+        }
     } catch (error) {
         addLogEntry(`Error saving configuration: ${error.message}`, 'error');
     }

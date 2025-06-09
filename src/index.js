@@ -13,9 +13,15 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { ipcMain } = require('electron');
-const { getConfigValue, setConfigValue, getRecentLogs, addLogEntry, LOG_LEVELS } = require('./DBManager');
+const {
+  getApiConfig,
+  setConfigValue,
+  getRecentLogs,
+  addLogEntry,
+  LOG_LEVELS,
+  initializeSchema
+} = require('./DBManager');
 const ApiClient = require('./ApiClient');
-const { initializeSchema, getRecentLogs: getRecentLogsFromDB } = require('./DBManager');
 
 // Global reference to the window object to prevent garbage collection
 let mainWindow;
@@ -69,52 +75,70 @@ app.on('activate', () => {
 
 // IPC Handlers
 ipcMain.handle('get-config', async () => {
-  const apiUrl = await getConfigValue('api.orderwise.baseUrl');
-  const webhookUrl = await getConfigValue('api.webhook.url');
-  const bearerToken = await getConfigValue('api.orderwise.bearerToken');
-  return { apiUrl, webhookUrl, bearerToken };
+  // Use the centralized getApiConfig to ensure validation and defaults are applied
+  return getApiConfig();
 });
 
 ipcMain.handle('save-config', async (event, config) => {
-  await setConfigValue('api.orderwise.baseUrl', config.apiUrl);
-  await setConfigValue('api.webhook.url', config.webhookUrl);
-  await setConfigValue('api.orderwise.bearerToken', config.bearerToken);
+  // Iterate over the provided config object and save each value
+  // This is more robust than hardcoding keys.
+  const promises = [];
+  if (config.baseUrl) {
+    promises.push(setConfigValue('api.orderwise.baseUrl', config.baseUrl));
+  }
+  if (config.externalWebhookUrl) {
+    promises.push(setConfigValue('api.externalwebhook.url', config.externalWebhookUrl));
+  }
+  if (config.bearerToken) {
+    promises.push(setConfigValue('api.orderwise.bearerToken', config.bearerToken));
+  }
+  
+  await Promise.all(promises);
+  
+  // Return the updated config to the renderer for confirmation
+  return getApiConfig();
 });
 
 ipcMain.handle('get-logs', async (event, limit) => {
-  return getRecentLogsFromDB(limit);
+  return getRecentLogs(limit);
 });
 
 ipcMain.handle('test-orderwise', async () => {
   try {
+    // Use the centrally managed ApiClient which is configured via getApiConfig
     const apiClient = new ApiClient();
     await apiClient.checkConnection();
+    addLogEntry(LOG_LEVELS.INFO.name, 'API_TEST_SUCCESS', { message: 'Connection successful.' });
     return { success: true, message: 'Connection successful.' };
   } catch (error) {
+    addLogEntry(LOG_LEVELS.ERROR.name, 'API_TEST_FAILED', { error: error.message });
     return { success: false, message: error.message };
   }
 });
 
 ipcMain.handle('send-test-payload', async () => {
-  // This is a placeholder. In a real scenario, you would send a test payload
-  // to the configured webhook URL.
-  const webhookUrl = await getConfigValue('api.webhook.url');
-  if (!webhookUrl) {
-    return { success: false, message: 'Webhook URL not configured.' };
+  const { externalWebhookUrl } = getApiConfig();
+  if (!externalWebhookUrl || externalWebhookUrl.includes('localhost')) {
+    const message = 'Webhook URL is not configured or is a local URL.';
+    addLogEntry(LOG_LEVELS.WARNING.name, 'WEBHOOK_TEST_SKIPPED', { reason: message });
+    return { success: false, message };
   }
   
   try {
-    const apiClient = new ApiClient(webhookUrl);
-    const response = await apiClient.post('/test', { message: 'This is a test payload.' });
+    // Use a temporary ApiClient for the external webhook
+    const webhookApiClient = new ApiClient(externalWebhookUrl);
+    const response = await webhookApiClient.post('', { message: 'This is a test payload from Orderwise Local Sync Validator.' });
+    addLogEntry(LOG_LEVELS.INFO.name, 'WEBHOOK_TEST_SUCCESS', { status: response.status });
     return { success: true, message: `Test payload sent successfully. Status: ${response.status}` };
   } catch (error) {
+    addLogEntry(LOG_LEVELS.ERROR.name, 'WEBHOOK_TEST_FAILED', { error: error.message });
     return { success: false, message: error.message };
   }
 });
 
 ipcMain.handle('sync-now', async () => {
   // This is a placeholder for the actual sync logic.
-  addLogEntry('Manual sync triggered', 'Sync process started.', LOG_LEVELS.INFO);
+  addLogEntry(LOG_LEVELS.INFO.name, 'MANUAL_SYNC_TRIGGERED', { message: 'Sync process started.' });
   return { success: true, message: 'Sync process started.' };
 });
 
