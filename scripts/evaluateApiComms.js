@@ -1,5 +1,6 @@
 // scripts/evaluateApiComms.js
-const apiClient = require('../src/ApiClient');
+const ApiClient = require('../src/ApiClient');
+const apiClient = new ApiClient();
 const { setConfigValue, getConfigValue, LOG_LEVELS, db } = require('../src/DBManager');
 const assert = require('assert');
 

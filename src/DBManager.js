@@ -206,6 +206,52 @@ function getRecentLogs(limit = 20) {
     }
 }
 
+// Function to get logs with flexible filtering
+function getLogs({ level, event, searchTerm, limit = 50, offset = 0 } = {}) {
+    try {
+        let query = 'SELECT * FROM logs';
+        const conditions = [];
+        const params = [];
+
+        if (level) {
+            conditions.push('level = ?');
+            params.push(level);
+        }
+        if (event) {
+            conditions.push('event = ?');
+            params.push(event);
+        }
+        if (searchTerm) {
+            conditions.push("data LIKE ?");
+            params.push(`%${searchTerm}%`);
+        }
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        query += ' ORDER BY timestamp DESC LIMIT ? OFFSET ?';
+        params.push(limit, offset);
+
+        const stmt = db.prepare(query);
+        const logs = stmt.all(...params);
+        
+        // Safely parse the JSON data field
+        return logs.map(log => {
+            try {
+                return { ...log, data: JSON.parse(log.data) };
+            } catch (e) {
+                // If data is not valid JSON, return it as is
+                return log;
+            }
+        });
+
+    } catch (error) {
+        console.error('Failed to get logs:', error);
+        return [];
+    }
+}
+
 
 // Export the db instance and functions for use in other modules
 module.exports = {
@@ -218,6 +264,7 @@ module.exports = {
     deleteConfigValue,
     getApiConfig,
     getRecentLogs,
+    getLogs,
 };
 
 // Initialize the schema when this module is loaded

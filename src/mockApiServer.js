@@ -120,8 +120,12 @@ app.post('/api/orderwise/mock/test/client-error', (req, res) => {
 });
 
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`[Mock API Server] Running at http://localhost:${port}`);
+  // Notify parent process that the server is listening, if run as a child process
+  if (process.send) {
+    process.send({ status: 'listening', port: port });
+  }
 });
 
 module.exports = app; // Export for potential testing or programmatic use

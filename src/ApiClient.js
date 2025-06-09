@@ -18,7 +18,8 @@ class ApiClient {
       headers: {
         'Authorization': `Bearer ${this.bearerToken}`,
         'Content-Type': 'application/json'
-      }
+      },
+      allowAbsoluteUrls: true
     });
 
     axiosRetry(this.client, {
@@ -37,7 +38,9 @@ class ApiClient {
           method: requestConfig.method,
           attempt: retryCount,
           error: error.message,
+          responseStatus: error.response ? error.response.status : null,
         });
+        return requestConfig;
       }
     });
 
@@ -46,6 +49,7 @@ class ApiClient {
         addLogEntry(LOG_LEVELS.DEBUG.name, 'ApiClientRequestSent', {
           method: config.method,
           url: config.url,
+          data: config.data,
         });
         return config;
       },
@@ -61,6 +65,11 @@ class ApiClient {
       (response) => {
         addLogEntry(LOG_LEVELS.DEBUG.name, 'ApiClientResponseReceived', {
           status: response.status,
+          data: response.data,
+          request: {
+            method: response.config.method,
+            url: response.config.url,
+          },
         });
         return response;
       },
@@ -68,7 +77,8 @@ class ApiClient {
         addLogEntry(LOG_LEVELS.ERROR.name, 'ApiClientRequestFailed', {
           message: error.message,
           url: error.config.url,
-          status: error.response ? error.response.status : null,
+          responseStatus: error.response ? error.response.status : null,
+          responseData: error.response ? error.response.data : null,
         });
         return Promise.reject(error);
       }

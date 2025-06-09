@@ -212,7 +212,7 @@
       "dependencies": [
         3
       ],
-      "status": "in-progress",
+      "status": "done",
       "subtasks": [
         {
           "id": 1,
@@ -286,7 +286,7 @@
             5
           ],
           "details": "Build tools and scripts to run evaluations that produce detailed logs for debugging and performance analysis. Use these logs to test and verify that all components, including UI, database, and test functionalities, work correctly together.",
-          "status": "pending"
+          "status": "done"
         }
       ]
     },
