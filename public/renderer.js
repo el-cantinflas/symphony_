@@ -14,6 +14,8 @@ const testPayloadButton = document.getElementById('test-payload');
 const syncNowButton = document.getElementById('sync-now');
 const saveConfigButton = document.getElementById('save-config');
 const logsContainer = document.getElementById('logs');
+const logFilterInput = document.getElementById('log-filter');
+const logLevelFilter = document.getElementById('log-level-filter');
 
 /**
  * Add a log entry to the UI
@@ -21,14 +23,18 @@ const logsContainer = document.getElementById('logs');
  * @param {string} type - The type of log (info, success, error)
  */
 function addLogEntry(message, type = 'info') {
-    const entry = document.createElement('div');
-    entry.className = 'log-entry';
-    
-    const timestamp = new Date().toLocaleString();
-    entry.innerHTML = `<span class="timestamp">${timestamp}</span> - <span class="${type}">${message}</span>`;
-    
-    logsContainer.appendChild(entry);
-    logsContainer.scrollTop = logsContainer.scrollHeight;
+   const entry = document.createElement('div');
+   entry.className = `log-entry ${type}`;
+   entry.dataset.logType = type;
+   
+   const timestamp = new Date().toLocaleString();
+   entry.innerHTML = `<span class="timestamp">${timestamp}</span> - <span class="${type}">${message}</span>`;
+   
+   logsContainer.appendChild(entry);
+   logsContainer.scrollTop = logsContainer.scrollHeight;
+
+   // Apply filters to the new log entry
+   filterLogs();
 }
 
 /**
@@ -38,8 +44,8 @@ async function loadConfig() {
     try {
         const config = await window.api.getConfig();
         if (config) {
-            apiUrlInput.value = config.apiUrl || '';
-            webhookUrlInput.value = config.webhookUrl || '';
+            apiUrlInput.value = config.baseUrl || '';
+            webhookUrlInput.value = config.externalWebhookUrl || '';
             bearerTokenInput.value = config.bearerToken || '';
             addLogEntry('Configuration loaded', 'success');
         }
@@ -54,13 +60,22 @@ async function loadConfig() {
 async function saveConfig() {
     try {
         const config = {
-            apiUrl: apiUrlInput.value,
-            webhookUrl: webhookUrlInput.value,
+            baseUrl: apiUrlInput.value,
+            externalWebhookUrl: webhookUrlInput.value,
             bearerToken: bearerTokenInput.value
         };
         
-        await window.api.saveConfig(config);
-        addLogEntry('Configuration saved successfully', 'success');
+        const updatedConfig = await window.api.saveConfig(config);
+        
+        // Reload the form with the potentially validated/defaulted values from the backend
+        if (updatedConfig) {
+            apiUrlInput.value = updatedConfig.baseUrl || '';
+            webhookUrlInput.value = updatedConfig.externalWebhookUrl || '';
+            bearerTokenInput.value = updatedConfig.bearerToken || '';
+            addLogEntry('Configuration saved and reloaded successfully', 'success');
+        } else {
+            addLogEntry('Configuration saved, but failed to retrieve updated values.', 'warning');
+        }
     } catch (error) {
         addLogEntry(`Error saving configuration: ${error.message}`, 'error');
     }
@@ -141,32 +156,70 @@ async function loadLogs() {
         });
         
         logsContainer.scrollTop = logsContainer.scrollHeight;
+        filterLogs(); // Apply filters after loading logs
     } catch (error) {
         addLogEntry(`Error loading logs: ${error.message}`, 'error');
     }
 }
 
+/**
+ * Filter logs based on text and level
+ */
+function filterLogs() {
+   const filterText = logFilterInput.value.toLowerCase();
+   const filterLevel = logLevelFilter.value;
+
+   const logEntries = logsContainer.getElementsByClassName('log-entry');
+
+   for (const entry of logEntries) {
+       const logMessage = entry.textContent.toLowerCase();
+       const logLevel = entry.dataset.logType;
+
+       const textMatch = logMessage.includes(filterText);
+       const levelMatch = filterLevel === 'all' || logLevel === filterLevel;
+
+       if (textMatch && levelMatch) {
+           entry.style.display = '';
+       } else {
+           entry.style.display = 'none';
+       }
+   }
+}
+
 // Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-    // Load initial data
-    loadConfig();
-    loadLogs();
-    
-    // Register event listeners
-    saveConfigButton.addEventListener('click', saveConfig);
-    testOrderwiseButton.addEventListener('click', testOrderwise);
-    testPayloadButton.addEventListener('click', sendTestPayload);
-    syncNowButton.addEventListener('click', syncNow);
-    
-    // Listen for log updates from the main process
-    window.api.onLogUpdate((log) => {
-        const data = JSON.parse(log.data || '{}');
-        const message = data.message || log.event;
-        const type = data.status === 'error' ? 'error' : 
-                     data.status === 'success' ? 'success' : 'info';
+/**
+ * Initialize the application
+ */
+function initializeApp() {
+    if (window.api) {
+        // Load initial data
+        loadConfig();
+        loadLogs();
         
-        addLogEntry(message, type);
-    });
-    
-    addLogEntry('Application initialized', 'success');
-});
+        // Register event listeners
+        saveConfigButton.addEventListener('click', saveConfig);
+        testOrderwiseButton.addEventListener('click', testOrderwise);
+        testPayloadButton.addEventListener('click', sendTestPayload);
+        syncNowButton.addEventListener('click', syncNow);
+        logFilterInput.addEventListener('input', filterLogs);
+        logLevelFilter.addEventListener('change', filterLogs);
+        
+        // Listen for log updates from the main process
+        window.api.onLogUpdate((log) => {
+            const data = JSON.parse(log.data || '{}');
+            const message = data.message || log.event;
+            const type = data.status === 'error' ? 'error' :
+                         data.status === 'success' ? 'success' : 'info';
+            
+            addLogEntry(message, type);
+        });
+        
+        addLogEntry('Application initialized', 'success');
+    } else {
+        console.warn('API not ready, retrying...');
+        setTimeout(initializeApp, 100);
+    }
+}
+
+// Start the initialization process
+initializeApp();
