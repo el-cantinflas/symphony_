@@ -19,11 +19,10 @@ node_modules/
 *.ntvs*
 *.njsproj
 *.sln
-*.sw?
 
-# OS specific
-.DS_Store
-
-# Task files
-# tasks.json
-# tasks/ 
+# Build output
+dist/
+out/
+build/
+*.exe
+win-unpacked/
